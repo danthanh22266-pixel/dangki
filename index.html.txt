@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Game Nhiệm Vụ</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; background: #f2f2f2; }
+    .card { background: white; padding: 20px; margin: 20px auto; border-radius: 10px; width: 350px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+    button { padding: 8px 15px; margin: 5px; border: none; border-radius: 5px; cursor: pointer; }
+    .btn { background: #4CAF50; color: white; }
+    .btn:hover { background: #45a049; }
+    #resetBtn { position: fixed; top: 10px; left: 50%; transform: translateX(-50%); }
+    #adminPanel { display: none; }
+  </style>
+</head>
+<body>
+  <h1>🎖️ Game Nhiệm Vụ</h1>
+  <button id="resetBtn" onclick="resetPage()">🔄 Reset</button>
+
+  <div id="login" class="card">
+    <h3>Đăng nhập</h3>
+    <input id="username" placeholder="Tên người chơi"><br><br>
+    <input id="team" placeholder="Team"><br><br>
+    <button class="btn" onclick="login()">Vào game</button>
+  </div>
+
+  <div id="game" style="display:none;">
+    <div class="card">
+      <h3>Xin chào <span id="playerName"></span> 👋</h3>
+      <p>Team: <span id="playerTeam"></span></p>
+      <p>Điểm: <span id="playerPoints">0</span></p>
+      <p>Rank: <span id="playerRank">Binh nhì</span></p>
+    </div>
+
+    <div class="card">
+      <h3>Nhiệm vụ hôm nay</h3>
+      <p id="mission">Đang tải...</p>
+      <button class="btn" onclick="requestDone()">Hoàn thành</button>
+    </div>
+
+    <div id="adminPanel" class="card">
+      <h3>Admin Panel</h3>
+      <div id="requests"></div>
+      <hr>
+      <h4>Chỉnh điểm & rank</h4>
+      <input id="editName" placeholder="Tên người chơi"><br><br>
+      <input id="editPoints" type="number" placeholder="Điểm mới"><br><br>
+      <select id="editRank">
+        <option value="">--Không đổi rank--</option>
+      </select><br><br>
+      <button onclick="setPlayerData()">Cập nhật</button>
+    </div>
+  </div>
+
+  <script>
+    const missions = [
+      "Gate: 25 phút",
+      "Kiểm tra doanh trại",
+      "Giúp dân join group",
+      "Hỗ trợ đồng đội"
+    ];
+
+    const ranks = [
+      {name:"Binh nhì", points:0},
+      {name:"Binh nhất", points:30},
+      {name:"Hạ sĩ", points:60},
+      {name:"Trung sĩ", points:90},
+      {name:"Thượng sĩ", points:120},
+      {name:"Thiếu úy", points:150},
+      {name:"Trung úy", points:180},
+      {name:"Thượng úy", points:210},
+      {name:"Đại úy", points:250},
+      {name:"Thiếu tá", points:300},
+      {name:"Trung tá", points:340},
+      {name:"Thượng tá", points:480},
+      {name:"Đại tá", points:540},
+      {name:"Thiếu tướng", points:600},
+      {name:"Trung tướng", points:680},
+      {name:"Thượng tướng", points:800}
+    ];
+
+    let currentUser = null;
+
+    // Load rank options vào admin select
+    window.onload = () => {
+      let sel = document.getElementById("editRank");
